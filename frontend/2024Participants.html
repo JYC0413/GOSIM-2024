@@ -5,7 +5,7 @@
     <title>Issues List</title>
     <link rel="icon" type="image/png" href="media/dog.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="module" src="component/IssueTab.js"></script>
+    <script type="module" src="component/issueTab.js"></script>
     <link href="dist/css/index.css" rel="stylesheet">
     <style>
         #issueList::-webkit-scrollbar {
@@ -25,92 +25,130 @@
         }
     </style>
 </head>
-<body style="display: flex;flex-direction: row;height: 100vh;margin: 0;">
-<div style="display: flex;margin: 1rem;width: 100%">
-    <div style="flex: 1;border: 1px solid rgba(0,0,0,0.1);border-radius: 0.5rem;height: max-content;">
-        <div style="display: flex;padding: 0.5rem 1rem;align-items: center;">
-            <img src="media/filter.svg">
-            <div style="font-weight: bold;margin-left: 0.2rem;">FILTERS</div>
+<body style="margin: 0;">
+<div style="display: flex;align-items: center;justify-content: space-between;margin: 0 2rem; line-height: 4rem;">
+    <img style="height: 2rem;" src="media/gosim-logo.svg"/>
+    <div style="display: flex;justify-content: space-around;align-items: center;">
+        <div style="cursor: pointer;padding: 0 0.2rem;margin: 0 0.8rem;">Rules</div>
+        <div style="cursor: pointer;padding: 0 0.2rem;margin: 0 0.8rem;">Timeline</div>
+        <div onclick="window.open('/2024Participants')" style="cursor: pointer;padding: 0 0.2rem;margin: 0 0.8rem;">2024
+            participants
         </div>
-        <hr/>
-        <div style="display: flex;justify-content: space-between;align-items: center;padding: 0.5rem 1rem;">
-            <div>Budget</div>
-            <img src="media/up.svg">
-        </div>
-        <div style="display: flex;flex-wrap: wrap;justify-content: space-between;padding: 0.5rem 1rem;">
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="0" type="checkbox"/>
-                <div style="white-space:nowrap;">0-200</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="200" type="checkbox"/>
-                <div style="white-space:nowrap;">200-400</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="400" type="checkbox"/>
-                <div style="white-space:nowrap;">400-500</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="500" type="checkbox"/>
-                <div style="white-space:nowrap;">Above 500</div>
-            </div>
-        </div>
-        <hr/>
-        <div style="display: flex;justify-content: space-between;align-items: center;padding: 0.5rem 1rem;">
-            <div>Skill</div>
-            <img src="media/up.svg">
-        </div>
-        <div style="display: flex;flex-wrap: wrap;justify-content: space-between;padding: 0.5rem 1rem;">
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="Rust" type="checkbox"/>
-                <div style="white-space:nowrap;">Rust</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="C" type="checkbox"/>
-                <div style="white-space:nowrap;">C</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="C++" type="checkbox"/>
-                <div style="white-space:nowrap;">C++</div>
-            </div>
-            <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
-                <input id="Javascript" type="checkbox"/>
-                <div style="white-space:nowrap;">Javascript</div>
-            </div>
-        </div>
-        <hr/>
-        <div style="display: flex;justify-content: right;padding: 0.5rem 1rem 1.2rem;">
-            <div style="padding: 0.5rem 1rem;color: white;background-color: #9046ff;border-radius: 0.3rem;">
-                Apply
-            </div>
+        <div style="cursor: pointer;padding: 0 0.2rem;margin: 0 0.8rem;">FAQ</div>
+        <div class="clickButton"
+             style="cursor: pointer;height:1.5rem;line-height:1.5rem;margin-left: 3rem;padding: 0.5rem 1rem;color: white;background-color: #6688FF;border-radius: 0.3rem;">
+            Join us
         </div>
     </div>
-    <div id="issueList" style="flex: 3;margin-left: 2rem;padding-right: 0.5rem;overflow-y: auto;max-height: 100%;">
+</div>
+<div style="display: flex;flex-direction: row;height: calc(100vh - 4rem);">
+    <div style="display: flex;margin: 1rem;width: 100%">
+        <div style="flex: 1;border: 1px solid rgba(0,0,0,0.1);border-radius: 0.5rem;height: max-content;">
+            <div style="display: flex;padding: 0.5rem 1rem;align-items: center;">
+                <img src="media/filter.svg">
+                <div style="font-weight: bold;margin-left: 0.2rem;">FILTERS</div>
+            </div>
+            <hr/>
+            <div onclick="showBudget()"
+                 style="display: flex;justify-content: space-between;align-items: center;padding: 0.5rem 1rem;">
+                <div>Budget</div>
+                <img src="media/up.svg">
+            </div>
+            <div style="display: flex;flex-wrap: wrap;justify-content: space-between;padding: 0.5rem 1rem;">
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="0" type="checkbox"/>
+                    <div style="white-space:nowrap;">0-200</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="200" type="checkbox"/>
+                    <div style="white-space:nowrap;">200-400</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="400" type="checkbox"/>
+                    <div style="white-space:nowrap;">400-500</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="500" type="checkbox"/>
+                    <div style="white-space:nowrap;">Above 500</div>
+                </div>
+            </div>
+            <hr/>
+            <div onclick="showSkill()"
+                 style="display: flex;justify-content: space-between;align-items: center;padding: 0.5rem 1rem;">
+                <div>Skill</div>
+                <img src="media/up.svg">
+            </div>
+            <div style="display: flex;flex-wrap: wrap;justify-content: space-between;padding: 0.5rem 1rem;">
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="Rust" type="checkbox"/>
+                    <div style="white-space:nowrap;">Rust</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="C" type="checkbox"/>
+                    <div style="white-space:nowrap;">C</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="C++" type="checkbox"/>
+                    <div style="white-space:nowrap;">C++</div>
+                </div>
+                <div style="display:flex;flex-wrap: nowrap;margin-right: 0.5rem;flex:1;">
+                    <input id="Javascript" type="checkbox"/>
+                    <div style="white-space:nowrap;">Javascript</div>
+                </div>
+            </div>
+            <hr/>
+            <div style="display: flex;justify-content: right;padding: 0.5rem 1rem 1.2rem;">
+                <div class="clickButton"
+                     style="padding: 0.5rem 1rem;color: white;background-color: #9046ff;border-radius: 0.3rem;">
+                    Apply
+                </div>
+            </div>
+        </div>
+        <div onscroll="scrollHandler(this)" class="beautifulScrollBar" id="issueList"
+             style="flex: 3;margin-left: 2rem;padding-right: 0.5rem;overflow-y: auto;max-height: 100%;">
+        </div>
     </div>
 </div>
 <script>
     let page = 1;
     let page_size = 10;
-    const issueList = document.getElementById('issueList');
-    fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/issues?page=${page}&page_size=${page_size}`, {
-        method: 'POST',
-        body: JSON.stringify({
-            "filter_strs": ["issue_budget_approved", "main_language", "repo_stars", "issue_budget", "issue_creator"]
+    let issueList = [];
+    let queryStatus = false;
+    const issuePlace = document.getElementById('issueList');
+
+    function scrollHandler(e) {
+        if (e.scrollHeight - e.scrollTop - 1 < e.clientHeight && !queryStatus) {
+            page += 1
+            requestData();
+        }
+    }
+
+    function requestData() {
+        queryStatus = true;
+        fetch(`/_api/getIssuesList?page=${page}&page_size=${page_size}`, {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                "filter_strs": ["issue_budget_approved", "main_language", "repo_stars", "issue_budget", "issue_creator"]
+            })
+        }).then(data => {
+            return data.json();
+        }).then(list => {
+            issueList = [...issueList, ...list];
+            list.forEach(item => {
+                const comp = document.createElement('issue-component');
+                comp.img = item.project_logo;
+                comp.name = item.issue_title;
+                comp.desc = item.issue_description;
+                comp.budget = item.issue_budget;
+                comp.link = item.issue_id;
+                issuePlace.appendChild(comp);
+                queryStatus = false;
+            })
         })
-    }).then(data => {
-        return data.json();
-    }).then(list => {
-        list.forEach(item => {
-            const comp = document.createElement('issue-component');
-            comp.img = "media/dog.jpg";
-            comp.name = item.issue_title;
-            comp.desc = item.issue_description;
-            comp.budget = item.issue_budget;
-            comp.link = item.issue_id;
-            console.log(comp)
-            issueList.appendChild(comp);
-        })
-    })
+    }
+
+    requestData()
 </script>
 </body>
 </html>
