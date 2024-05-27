@@ -144,7 +144,7 @@
     </table>
     <div style="display: flex;margin-top: 1.5rem;">
         <div style="display: flex;justify-content: center;flex:1;">
-            <div id="decline" class="clickButton"
+            <div onclick="decline()" id="decline" class="clickButton"
                  style="max-width: max-content;padding: 0.5rem 1rem;color: white;background-color: #9046ff;border-radius: 0.3rem;">
                 Decline
             </div>
@@ -152,7 +152,7 @@
         <div style="display: flex;justify-content: center;flex: 1;">
             <input type="number" min="0" id="budgetInput"
                    style="border: 1px solid #bdc5cb;border-radius: 0.3rem;padding: 0.5rem;width: 4rem;"/>
-            <div id="approve" class="clickButton"
+            <div onclick="approve()" id="approve" class="clickButton"
                  style="padding: 0.5rem 1rem;color: white;background-color: #9046ff;border-radius: 0.3rem;margin-left: 1rem;">
                 Approve
             </div>
@@ -177,7 +177,10 @@
     let page = 1;
     let page_size = 10;
 
-    let issuesList = []
+    let thisIssueId = "";
+    let issuesList = [];
+    let queryStatus = false;
+    let filterList = ["issue_budget","repo_stars"]
     const issuesListPlace = document.getElementById('issuesList');
     const listPlace = document.getElementById('list');
     const alertPlace = document.getElementById('alert');
@@ -207,49 +210,58 @@
     const linkedPR = document.getElementById('linkedPR');
     const comments = document.getElementById('comments');
     const budgetInput = document.getElementById('budgetInput');
-    const approveButton = document.getElementById('approve');
-    const declineButton = document.getElementById('decline');
 
     function scrollHandler(e) {
         if (e.scrollHeight - e.scrollTop - 1 < e.clientHeight && !queryStatus) {
             page += 1
-            requestData();
+            queryIssues();
         }
     }
 
-    fetch(`/_api/getIssuesList?page=${page}&page_size=${page_size}`, {
-        method: 'POST',
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            "filter_strs": ["issue_budget_approved", "main_language", "repo_stars", "issue_budget", "issue_creator"],
-            "review_status": "approve"
-        })
-    }).then(data => {
-        return data.json();
-    }).then(list => {
-        if (list && Array.isArray(list)) {
-            const issuesStats = list[0].issue_stats
-            total.innerText = issuesStats[0];
-            approved.innerText = issuesStats[1];
-            rejected.innerText = issuesStats[2];
-            queue.innerText = issuesStats[3];
-            const runningBudget = list[0].running_budget
-            totalBudget.innerText = runningBudget[0]
-            totalApprovedBudget.innerText = runningBudget[2]
-            issuesList = [...issuesList, ...list]
-            list.forEach(item => {
-                const comp = document.createElement('issue-component');
-                comp.id = item.issue_id;
-                comp.img = item.project_logo;
-                comp.name = item.issue_title;
-                comp.desc = item.issue_description;
-                comp.budget = item.issue_budget;
-                comp.type = "admin";
-                comp.link = item.issue_id;
-                issuesListPlace.appendChild(comp);
+    function clearList() {
+        issuesListPlace.innerHTML = "";
+        issuesList = []
+    }
+
+    function queryIssues() {
+        queryStatus = true;
+        fetch(`/_api/getIssuesList?page=${page}&page_size=${page_size}`, {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                "filter_strs": filterList
             })
-        }
-    })
+        }).then(data => {
+            return data.json();
+        }).then(list => {
+            queryStatus = false;
+            if (list && Array.isArray(list)) {
+                const issuesStats = list[0].issue_stats
+                total.innerText = issuesStats[0];
+                approved.innerText = issuesStats[2];
+                rejected.innerText = issuesStats[3];
+                queue.innerText = issuesStats[1];
+                const runningBudget = list[0].running_budget
+                totalBudget.innerText = runningBudget[0]
+                totalApprovedBudget.innerText = runningBudget[2]
+                issuesList = [...issuesList, ...list]
+                list.forEach(item => {
+                    const comp = document.createElement('issue-component');
+                    comp.id = item.issue_id;
+                    comp.img = item.project_logo;
+                    comp.name = item.issue_title;
+                    comp.star = item.repo_stars;
+                    comp.desc = item.issue_description;
+                    comp.budget = item.issue_budget;
+                    comp.type = "admin";
+                    comp.link = item.issue_id;
+                    issuesListPlace.appendChild(comp);
+                })
+            }
+        })
+    }
+
+    queryIssues();
 
     function clickBackToList() {
         if (budgetInput.value) {
@@ -266,8 +278,9 @@
     }
 
     function goDetail(issueId) {
+        thisIssueId = issueId;
         const thisIssue = issuesList.find(issues => issues.issue_id === issueId);
-        const urlSplit = thisIssue.issue_id.split("/");
+        const urlSplit = thisIssue.project_id.split("/");
         budgetInput.max = thisIssue.total_budget_allocated;
         budgetInput.addEventListener("keydown", (event) => {
             const num = parseInt(event.target.value + event.key)
@@ -284,20 +297,18 @@
                 return false;
             }
         })
-        orgName.innerText = urlSplit[urlSplit.length - 2];
-        title.innerText = "!!!";
-        desc.innerHTML = thisIssue.project_description.replace("./", "https://raw.githubusercontent.com/" + urlSplit.slice(-2).join("/") + "/master/");
-        budget.innerText = thisIssue.total_budget_allocated;
+        orgName.innerText = `<a href="${urlSplit.slice(0, -1).join("/")}" target="_blank">${urlSplit[urlSplit.length - 2]}</a>`;
+        title.innerText = thisIssue.issue_title;
+        desc.innerHTML = thisIssue.issue_description;
+        budget.innerText = thisIssue.issue_budget;
         language.innerText = thisIssue.main_language;
         repo.innerHTML = `<a href="${thisIssue.project_id}" target="_blank">${urlSplit[urlSplit.length - 1]}</a>`;
-        issuesUrl.innerHTML = thisIssue.issues_list.map((item, index) => {
-            return `<a href="${item}" target="_blank">${item}</a>` + (index + 1 < thisIssue.issues_list.length ? `<br/>` : "")
-        });
-        assignee.innerText = "!!!";
-        projectApprovedBudget.innerText = "!!!";
-        reviewStatus.innerText = "!!!";
-        linkedPR.innerHTML = "";
-        comments.innerText = "!!!";
+        issuesUrl.innerHTML = `<a href="${thisIssue.issue_id}" target="_blank">${thisIssue.issue_id}</a>`;
+        assignee.innerText = thisIssue.issue_assignees;
+        projectApprovedBudget.innerText = thisIssue.issue_budget_approved ? thisIssue.issue_budget : 0;
+        reviewStatus.innerText = thisIssue.review_status;
+        linkedPR.innerHTML = thisIssue.issue_linked_pr;
+        comments.innerText = "";
         listPlace.style.display = "none";
         detailPlace.style.display = "block";
     }
@@ -307,36 +318,59 @@
     }
 
     function changeTag(num) {
+        goList();
         switch (num) {
             case 0:
                 totalTag.className = "selectedTag clickButton"
                 approvedTag.className = "normalTag clickButton"
                 rejectedTag.className = "normalTag clickButton"
                 queueTag.className = "normalTag clickButton"
+                filterList = ["issue_budget","repo_stars"]
                 break;
             case 1:
                 totalTag.className = "normalTag clickButton"
                 approvedTag.className = "selectedTag clickButton"
                 rejectedTag.className = "normalTag clickButton"
                 queueTag.className = "normalTag clickButton"
+                filterList = ["approve"]
                 break;
             case 2:
                 totalTag.className = "normalTag clickButton"
                 approvedTag.className = "normalTag clickButton"
                 rejectedTag.className = "selectedTag clickButton"
                 queueTag.className = "normalTag clickButton"
+                filterList = ["decline"]
                 break;
             case 3:
                 totalTag.className = "normalTag clickButton"
                 approvedTag.className = "normalTag clickButton"
                 rejectedTag.className = "normalTag clickButton"
                 queueTag.className = "selectedTag clickButton"
+                filterList = ["queue"]
                 break;
         }
+        clearList();
+        queryIssues();
     }
 
     function approve() {
-
+        fetch(`/_api/declineIssues`, {
+            method: 'POST',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                "issue_id": thisIssueId,
+                "issue_budget": budgetInput.value
+            })
+        }).then((data) => {
+            issuesList = issuesList.map(item=>{
+                if(item.issue_id === thisIssueId){
+                    return {...item,review_status:"approve"}
+                }else {
+                    return item
+                }
+            })
+            goList();
+        })
     }
 
     function decline() {

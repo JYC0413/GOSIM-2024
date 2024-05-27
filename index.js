@@ -21,6 +21,24 @@ app.post('/_api/getIssuesList', async (req, res) => {
     res.send(await data.json())
 });
 
+app.post('/_api/declineIssues', async (req, res) => {
+    console.log(req.body)
+    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/decline`, {
+        method: 'POST',
+        body: JSON.stringify(req.body)
+    })
+    res.send(await data.text())
+});
+
+app.post('/_api/approveIssue', async (req, res) => {
+    console.log(req.body)
+    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/budget`, {
+        method: 'POST',
+        body: JSON.stringify(req.body)
+    })
+    res.send(await data.text())
+});
+
 app.post('/_api/getProjectsList', async (req, res) => {
     const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/projects?page=${req.query.page}&page_size=${req.query.page_size}`)
     try{

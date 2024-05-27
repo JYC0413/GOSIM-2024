@@ -38,7 +38,7 @@ class IssueTab extends HTMLElement {
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
     }
             </style>
-            <div style="display: flex;align-items: center;justify-content: space-between;border-radius: 0.5rem;border:1px solid rgb(0,0,0,0.3);padding: 2rem;margin-bottom: 1.5rem;">
+            <div style="position: relative;display: flex;align-items: center;justify-content: space-between;border-radius: 0.5rem;border:1px solid rgb(0,0,0,0.3);padding: 2rem;margin-bottom: 1.5rem;">
                 <div id="data-part" style="display: flex;align-items: center;">
                     <div>
                         <div onclick="window.open('${this.link}','_blank')" class="clickText" style="color: #3ca0e6;font-weight: 600;padding-bottom: 0.5rem;cursor: pointer;">${this.name}</div>
@@ -46,8 +46,11 @@ class IssueTab extends HTMLElement {
                         <div>Budget: $${this.budget}</div>
                     </div>
                 </div>
-                <div id="button" class="clickButton" style="width: max-content;white-space: nowrap;padding: 0.5rem 1rem;color: white;background-color: #3ca0e6;border-radius: 0.3rem;cursor: pointer;">
-                View Issue
+                <div>
+                    <div style="display:flex;justify-content: center;align-items: center;right: 2rem;top:1rem;"><div>${this.star}</div><img style="margin-left: 0.2rem;height: 1rem;" src="media/star.svg"/></div>
+                    <div id="button" class="clickButton" style="margin-top: 0.5rem;width: max-content;white-space: nowrap;padding: 0.5rem 1rem;color: white;background-color: #3ca0e6;border-radius: 0.3rem;cursor: pointer;">
+                        View Issue
+                    </div>
                 </div>
             </div>
         `
@@ -65,7 +68,7 @@ class IssueTab extends HTMLElement {
         } else {
             button.innerText = "View Issue"
             button.addEventListener('mousedown', () => {
-                window.open('${this.link}','_blank')
+                window.open(this.link, '_blank')
             })
         }
 
@@ -82,7 +85,6 @@ class IssueTab extends HTMLElement {
             contentElement.innerHTML = this.desc;
             const descPlace = this.shadowRoot.getElementById("descPlace");
             const text = contentElement.textContent.trim()
-            console.log(text)
             descPlace.innerText = text.substring(0, 100) + (text.length > 0 ? "..." : "");
         }
     }

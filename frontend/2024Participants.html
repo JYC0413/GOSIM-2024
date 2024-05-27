@@ -5,7 +5,7 @@
     <title>Issues List</title>
     <link rel="icon" type="image/png" href="media/dog.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="module" src="component/issueTab.js"></script>
+    <script type="module" src="component/IssueTab.js"></script>
     <link href="dist/css/index.css" rel="stylesheet">
     <style>
         #issueList::-webkit-scrollbar {
@@ -129,7 +129,7 @@
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                "filter_strs": ["issue_budget_approved", "main_language", "repo_stars", "issue_budget", "issue_creator"]
+                "filter_strs": ["issue_budget_approved", "repo_stars"]
             })
         }).then(data => {
             return data.json();
@@ -139,6 +139,7 @@
                 const comp = document.createElement('issue-component');
                 comp.img = item.project_logo;
                 comp.name = item.issue_title;
+                comp.star = item.repo_stars;
                 comp.desc = item.issue_description;
                 comp.budget = item.issue_budget;
                 comp.link = item.issue_id;
