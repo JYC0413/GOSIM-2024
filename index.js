@@ -10,11 +10,13 @@ const staticPath = path.join(__dirname, 'frontend');
 app.use(express.static(staticPath));
 app.use(bodyParser.json());
 
+// const serverUrl = "https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q"
+const serverUrl = "https://code.flows.network/webhook/xQEVfC19nwm0Jyai1ch8"
 //api请求部分
 
 app.post('/_api/getIssuesList', async (req, res) => {
     console.log(req.body)
-    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/issues?page=${req.query.page}&page_size=${req.query.page_size}`, {
+    const data = await fetch(`${serverUrl}/issues?page=${req.query.page}&page_size=${req.query.page_size}`, {
         method: 'POST',
         body: JSON.stringify(req.body)
     })
@@ -23,7 +25,7 @@ app.post('/_api/getIssuesList', async (req, res) => {
 
 app.post('/_api/declineIssues', async (req, res) => {
     console.log(req.body)
-    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/decline`, {
+    const data = await fetch(`${serverUrl}/decline`, {
         method: 'POST',
         body: JSON.stringify(req.body)
     })
@@ -32,7 +34,7 @@ app.post('/_api/declineIssues', async (req, res) => {
 
 app.post('/_api/approveIssue', async (req, res) => {
     console.log(req.body)
-    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/budget`, {
+    const data = await fetch(`${serverUrl}/budget`, {
         method: 'POST',
         body: JSON.stringify(req.body)
     })
@@ -40,7 +42,7 @@ app.post('/_api/approveIssue', async (req, res) => {
 });
 
 app.post('/_api/getProjectsList', async (req, res) => {
-    const data = await fetch(`https://code.flows.network/webhook/5xAx1Yru2BqZ9PUacb3q/projects?page=${req.query.page}&page_size=${req.query.page_size}`)
+    const data = await fetch(`${serverUrl}/projects?page=${req.query.page}&page_size=${req.query.page_size}`)
     try{
         res.send(await data.json())
     }catch (e) {

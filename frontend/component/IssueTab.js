@@ -38,7 +38,9 @@ class IssueTab extends HTMLElement {
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
     }
             </style>
-            <div style="position: relative;display: flex;align-items: center;justify-content: space-between;border-radius: 0.5rem;border:1px solid rgb(0,0,0,0.3);padding: 2rem;margin-bottom: 1.5rem;">
+            <div id="body" style="position: relative;display: flex;align-items: center;justify-content: space-between;border-radius: 0.5rem;border:1px solid rgb(0,0,0,0.3);padding: 2rem;margin-bottom: 1.5rem;">
+                <img id="yes" style="display: none;position: absolute;top: 0.3rem;left: 0.3rem;" src="media/yes.svg"/>
+                <img id="no" style="display: none;position: absolute;top: 0.3rem;left: 0.3rem;" src="media/no.svg"/>
                 <div id="data-part" style="display: flex;align-items: center;">
                     <div>
                         <div onclick="window.open('${this.link}','_blank')" class="clickText" style="color: #3ca0e6;font-weight: 600;padding-bottom: 0.5rem;cursor: pointer;">${this.name}</div>
@@ -60,7 +62,17 @@ class IssueTab extends HTMLElement {
         this.render();
 
         const button = this.shadowRoot.getElementById("button");
+        const body = this.shadowRoot.getElementById("body");
         if (this.type === "admin") {
+            if(this.status === "approve") {
+                this.shadowRoot.getElementById("yes").style.display = "block";
+                this.shadowRoot.getElementById("no").style.display = "none";
+                body.style.backgroundColor = "#F1FDE9"
+            }else if(this.status === "decline"){
+                this.shadowRoot.getElementById("yes").style.display = "none";
+                this.shadowRoot.getElementById("no").style.display = "block";
+                body.style.backgroundColor = "#F5C4C6"
+            }
             button.innerText = "Review"
             button.addEventListener('mousedown', () => {
                 goDetail(this.id)
